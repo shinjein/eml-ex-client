@@ -53,7 +53,7 @@ class Upload extends React.Component {
 	return (
 		<div>
 			<h1>
-			E-Mail xport Project (EmXP)
+			E-Mail xportt Project (EmXP)
 			</h1>
 			<h3>
 			File Upload using React!
