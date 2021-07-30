@@ -3,152 +3,83 @@ import React from 'react';
 
 class Upload extends React.Component {
   state = {
+			fileNames: [],
       selectedFiles: null,
+			oneFile: null,
 	};
-	// On file select (from the pop up)
-	onFileChange = event => {
+
+	setFileState = e => {
+		const files = e.target.files;
+		let names = [];
+		for (let i = 0; i < files.length; i++) {
+			names.push(files[i].name); 
+			console.log(names);
+		}
 	  this.setState({ 
-      selectedFiles: event.target.files,
+			fileNames: names,
+      selectedFiles: e.target.files,
+			oneFile: e.target.files[0].text
     });
 	};
-	// On file upload (click the upload button)
-	handleFormSubmit = async (event) => {
-		event.preventDefault();
-		const { selectedFiles } = this.state;
-		const file = new FormData();
-    	file.append("myFile", selectedFiles);
-		const config = {
-			headers: {
-				'content-type': 'multipart/form-data'
-			}
-		}
-    const response = await postfiles(file, config);
-		console.log("posting file...")
-		console.log(response.data);
-		}
-  
-  // async componentDidMount() {
-  //   const response = await getfiles()
-  // }
 
-	fileData = () => {	
-	if (this.state.selectedFiles) {
-		return (
-		<div>
-			<h2>File Names:</h2>
-        <p>File Name: {this.state.selectedFiles.name}</p>
-        <p>File Type: {this.state.selectedFiles.type}</p>
-    </div>
-      );} else {
-      return (
-      <div>
-        <br />
-        <h4>Choose before Pressing the Upload button</h4>
-      </div>
-      );
-    }
+	onFileUpload = async (e) => {
+		e.preventDefault();
+		const { selectedFiles } = this.state;
+		const data = new FormData();
+			data.append("files", selectedFiles);
+				const config = {
+					headers: {
+						'content-type': 'multipart/form-data'
+					}
+				}
+				console.log(data)
+		const response = await postfiles(data, config);
+			console.log(response);
+	}
+
+	renderFileData = () => {	
+		const { fileNames, selectedFiles } = this.state;
+		if ( selectedFiles ) {
+			return (
+			<div>
+				<h4>File Names:</h4>
+				<ul>
+					{fileNames.map((name, index) => {
+						return (
+							<li key={index}>{name}</li>
+						)
+					})}
+				</ul>
+			</div>
+				);} else {
+				return (
+				<div className="instructions">
+					<br />
+					<h4>Instructions:</h4>
+					<ol>
+						<li>Select .eml files</li>
+						<li>Click send to extract email information</li>
+					</ol>
+				</div>
+				);
+			}
 };
 	
 	render() {
 	return (
 		<div>
-			<h1>
-			E-Mail xportt Project (EmXP)
-			</h1>
-			<h3>
-			File Upload using React!
-			</h3>
-			<form>
-				<input 
-					type="file" 
-					name="myFile"
-					multiple 
-					onChange={this.onFileChange} />
-				<button type="submit" onClick={this.handleFormSubmit}>
-				Upload!
-				</button>
-			</form>
-		{this.fileData()}
+			<h1>.EML XP</h1>
+			<h4>view contents of .eml files in bulk without opening them</h4>
+				<form>
+					<label htmlFor="file">Upload Files:</label>
+					<input type="file" name="file" id="file" 
+						multiple onChange={this.setFileState} /> 
+					<button onClick={this.onFileUpload}> Send </button> 
+				</form>
+			{this.renderFileData()}
 		</div>
 	);
 	}
 }
 
 export default Upload;
-
-
-// https://medium.com/free-code-camp/how-to-create-file-upload-with-react-and-node-2aa3f9aab3f0
-
-// import React from "react";
-// import { addProject, uploadFile } from "../api";
-
-// class AddProject extends React.Component {
-//   state = {
-//     title: "",
-//     description: "",
-//     imageUrl: "",
-//   };
-
-//   handleFileChange = (event) => {
-//     this.setState({
-//       imageUrl: event.target.files[0],
-//     });
-//   };
-
-//   handleChange = (event) => {
-//     let { name, value } = event.target;
-//     this.setState({
-//       [name]: value,
-//     });
-//   };
-
-//   handleFormSubmit = async (event) => {
-//     event.preventDefault();
-//     const { title, description, imageUrl } = this.state;
-
-//     const uploadData = new FormData();
-//     uploadData.append("file", imageUrl);
-
-//     //1. Upload the image to our api
-//     const response = await uploadFile(uploadData);
-
-//     //2. Create the project on our api
-//     const newProject = {
-//       title,
-//       description,
-//       imageUrl: response.data.fileUrl,
-//     };
-//     await addProject(newProject);
-//     this.props.history.push("/projects");
-//   };
-
-//   render() {
-//     const { title, description } = this.state;
-//     return (
-//       <form onSubmit={this.handleFormSubmit} encType="multipart/form-data">
-//         <label>Title</label>
-//         <input
-//           type="text"
-//           name="title"
-//           onChange={this.handleChange}
-//           value={title}
-//         />
-
-//         <label>Description</label>
-//         <input
-//           type="text"
-//           name="description"
-//           onChange={this.handleChange}
-//           value={description}
-//         />
-
-//         <label>Image</label>
-//         <input type="file" onChange={this.handleFileChange} />
-
-//         <button type="submit">Create</button>
-//       </form>
-//     );
-//   }
-// }
-
-// export default AddProject;
