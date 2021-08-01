@@ -1,40 +1,31 @@
 import { postfiles } from "../api";
-import React from 'react';
+import React, { useState } from 'react';
 
-class Upload extends React.Component {
-  state = {
-			fileNames: [],
-      selectedFiles: null,
-			field_name: ''
-	};
+const Upload = () => {
+	const [username, setUsername] = useState();
+	const [fileNames, setFileNames] = useState([]);
+	const [selectedFiles, setSelectedFiles] = useState();
 
-	setFileData = e => {
+	const handleUser = (e) => {
+		setUsername(e);
+	}
+
+	const handleFileData = (e) => {
 		const files = e.target.files;
-		let names = [];
-		for (let i = 0; i < files.length; i++) {
-			names.push(files[i].name); 
-			console.log(names);
-		}
-	  this.setState({ 
-			fileNames: names,
-      selectedFiles: files
-		});
+		let file_names = [];		
+			for (let i = 0; i < files.length; i++) {
+				file_names.push(files[i].name); 
+				console.log(file_names);
+			}
+		setFileNames(file_names);
+		setSelectedFiles(files);
 	};
 
-	setFieldName = e => {
-		const input = e.target.field_name;
-		let names = [];
-	  this.setState({ 
-      field_name: input
-		});
-	};
-
-	onFileUpload = async (e) => {
+	const onFileUpload = async (e) => {
 		e.preventDefault();
-		const { field_name, selectedFiles } = this.state;
 		const formData = new FormData();
 			for (const file of selectedFiles ) {
-				formData.append(field_name, file);
+				formData.append("files", file);
 			}
 				const config = {
 					headers: {
@@ -46,10 +37,8 @@ class Upload extends React.Component {
 		console.log(response.data);
 	}
 
-	renderFileData = () => {	
-		const { fileNames, selectedFiles } = this.state;
-		if ( selectedFiles ) {
-			return (
+	const renderFileName = () => {	
+		return (
 			<div>
 				<h4>File Names:</h4>
 				<ul>
@@ -60,39 +49,32 @@ class Upload extends React.Component {
 					})}
 				</ul>
 			</div>
-				);} else {
-				return (
-				<div className="instructions">
-					<br />
-					<h4>Instructions:</h4>
-					<ol>
-						<li>Name bulk (date_lastname format: 210731_shin)</li>
-						<li>Select .eml files (max 10 files)</li>
-						<li>Click send to extract email information</li>
-					</ol>
-				</div>
-				);
-			}
-};
+			)
+	};
 	
-	render() {
-	return (
-		<div>
+return ( 
+		<>
 			<h1>Sm@il</h1> 
 			<h4>view contents of bulk .eml files without opening them</h4>
-				<form>
-					<label>Field Name</label>
-						<input type="text" name="field_name" id="field_name" 
-							multiple onChange={this.setFileData} /> 
+				<form onSubmit={onFileUpload}>
+					<label htmlFor="file">Username:</label>
+						<input 
+							multiple
+							type="username" 
+							name="username"  
+							value={username}  
+							onChange={handleUser} /> 
 					<label htmlFor="file">Upload Files:</label>
-						<input type="file" name="file" id="file" 
-							multiple onChange={this.setFileData} /> 
-					<button onClick={this.onFileUpload}> Send </button> 
+						<input 
+							multiple
+							type="file" 
+							name="files"  
+							onChange={handleFileData} /> 
+					<button> Send </button> 
 				</form>
-			{this.renderFileData()}
-		</div>
-	);
-	}
+				{renderFileName(fileNames)}
+			</>
+		);
 }
 
 export default Upload;
