@@ -54,8 +54,6 @@ const Upload = () => {
 	
 return ( 
 		<>
-			<h1>Sm@il</h1> 
-			<h4>view contents of bulk .eml files without opening them</h4>
 				<form onSubmit={onFileUpload}>
 					<label htmlFor="file">Username:</label>
 						<input 
